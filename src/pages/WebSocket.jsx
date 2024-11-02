@@ -48,14 +48,14 @@ const WebSocket = () => {
   }, [roomId]);
 
   useEffect(() => {
-    console.log("kokoday: ", heartRate.heartRate1);
+    console.log("心拍: ", heartRate.heartRate1);
     setheartBeeat1((prev) => [...prev, heartRate.heartRate1]);
     setheartBeeat2((prev) => [...prev, heartRate.heartRate2]);
   }, [heartRate]);
 
   return (
     <>
-      <h1>Hellow WebSocket</h1>
+      <h1>Hello WebSocket</h1>
       <button
         onClick={() =>
           navigate("/result", {
@@ -71,7 +71,7 @@ const WebSocket = () => {
       <p>
         心拍数: {heartRate.player2}:{heartRate.heartRate2}
       </p>
-      <h1>player1</h1>
+      {/* <h1>player1</h1>
       <div>
         {heartBeeat1.map((req, index) => (
           // eslint-disable-next-line react/no-array-index-key
@@ -84,7 +84,7 @@ const WebSocket = () => {
           // eslint-disable-next-line react/no-array-index-key
           <p key={index}>{req}</p>
         ))}
-      </div>
+      </div> */}
     </>
   );
 };
