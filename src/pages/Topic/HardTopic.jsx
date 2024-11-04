@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Typography, Box, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const topicHard = [
@@ -13,12 +13,13 @@ const topicHard = [
   { id: 29, topic: "相手にどのようにプロポーズをするか" },
   { id: 30, topic: "相手に対して今感じていることを素直に話す" },
 ];
+
 export default function HardTopic({ player, count, setCount }) {
   const navigate = useNavigate();
+
   const sendTopic = (id) => {
     console.log(`Hard_id: ${id}`);
-    const data = { player: player, id: id }; // dataを正しい形式で設定
-
+    const data = { player: player, id: id };
     console.log("ただいま、メールを送信してます", data);
     const url = "https://hartlink-websocket-api.onrender.com/topicId";
 
@@ -37,7 +38,7 @@ export default function HardTopic({ player, count, setCount }) {
       })
       .then((data) => {
         console.log("Success:", data);
-        if (count == 1) {
+        if (count === 1) {
           navigate(`/room`);
         }
         setCount(1);
@@ -46,26 +47,44 @@ export default function HardTopic({ player, count, setCount }) {
         console.error("Error:", error);
       });
   };
+
   return (
-    <>
-      <h4>HardTopic</h4>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#f0f0f0", padding: "20px" }}
+    >
+      <Typography variant="h4" gutterBottom>
+        Hard Topic
+      </Typography>
+
+      <Stack
+        spacing={2}
+        alignItems="center"
+        sx={{ width: "100%", maxWidth: 500 }}
       >
         {topicHard.map((hard) => (
           <Button
             key={hard.id}
-            style={{ padding: "10px 0" }}
+            variant="contained"
             onClick={() => sendTopic(hard.id)}
+            sx={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              color: "#fff",
+              backgroundColor: "#f44336",
+              width: "100%",
+              padding: "15px 20px",
+              borderRadius: "10px",
+              ":hover": { backgroundColor: "#d32f2f" },
+            }}
           >
             {hard.topic}
           </Button>
         ))}
-      </div>
-    </>
+      </Stack>
+    </Box>
   );
 }

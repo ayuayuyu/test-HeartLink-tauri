@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "@mui/material";
+import { Button, Typography, Container } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const randomTopics = [
@@ -42,14 +42,15 @@ export default function RandomTopic() {
   const player = location.state.player;
   const [count, setCount] = useState(0);
 
-  function getRandomTopic() {
+  const getRandomTopic = () => {
     const index = Math.floor(Math.random() * randomTopics.length);
     sendTopic(index);
     setCurrentTopic(randomTopics[index]);
-  }
+  };
+
   const sendTopic = (id) => {
-    console.log(`random_id: ${id},count: ${count}`);
-    const data = { player: player, id: id }; // dataを正しい形式で設定
+    console.log(`random_id: ${id}, count: ${count}`);
+    const data = { player: player, id: id };
 
     console.log("ただいま、メールを送信してます", data);
     const url = "https://hartlink-websocket-api.onrender.com/topicId";
@@ -69,7 +70,7 @@ export default function RandomTopic() {
       })
       .then((data) => {
         console.log("Success:", data);
-        if (count == 1) {
+        if (count === 1) {
           navigate(`/room`);
         }
         setCount(1);
@@ -80,21 +81,31 @@ export default function RandomTopic() {
   };
 
   return (
-    <>
-      <h1>2回ランダムボタンを押してね!</h1>
-      <h4>Random Topic</h4>
+    <Container style={{ textAlign: "center", padding: "20px" }}>
+      <Typography variant="h4">2回ランダムボタンを押してね!</Typography>
+      <Typography variant="h6">Random Topic</Typography>
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          marginTop: "20px",
         }}
       >
-        <Button onClick={() => getRandomTopic()} variant="contained">
+        <Button
+          onClick={getRandomTopic}
+          variant="contained"
+          color="primary"
+          style={{ marginBottom: "20px" }}
+        >
           ランダムなお題
         </Button>
-        {currentTopic && <Button>{currentTopic.topic}</Button>}
+        {currentTopic && (
+          <Button variant="outlined" color="secondary">
+            {currentTopic.topic}
+          </Button>
+        )}
       </div>
-    </>
+    </Container>
   );
 }

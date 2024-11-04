@@ -1,23 +1,28 @@
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReconnectingWebSocket from "reconnecting-websocket";
-// ESM
 import { destr } from "destr";
 import Topics from "./Topic/Topics";
+import { Box, Typography, Button, Stack } from "@mui/material";
 
 const WebSocket = () => {
   const navigate = useNavigate();
-
-  // const url = `ws://127.0.0.1:8000/ws/${roomId}`;
   const url = `wss://hartlink-websocket-api.onrender.com/ws`;
 
-  const [heartRate, setheartRate] = useState(
-    "{player1:null,heartRate1:0.0,player2:null,heartRate2:0.0}"
-  );
-  const [heartBeeat1, setheartBeeat1] = useState([]);
-  const [heartBeeat2, setheartBeeat2] = useState([]);
+  const [heartRate, setHeartRate] = useState({
+    player1: null,
+    heartRate1: 0.0,
+    player2: null,
+    heartRate2: 0.0,
+  });
+  const [heartBeeat1, setHeartBeeat1] = useState([]);
+  const [heartBeeat2, setHeartBeeat2] = useState([]);
   const [topicId, setTopicId] = useState([]);
-  // const [heartRate, setheartRate] = useState<string>(" ");
+  const [isRecording, setIsRecording] = useState(false);
+  const [dataArray1, setDataArray1] = useState([]);
+  const [dataArray2, setDataArray2] = useState([]);
+  const [heart1, setHeart1] = useState([]);
+  const [heart2, setHeart2] = useState([]);
   const socketRef = useRef();
 
   useEffect(() => {
@@ -26,17 +31,13 @@ const WebSocket = () => {
 
     websocket.onopen = () => {
       console.log("WebSocket connection established");
-      // WebSocket接続が確立されたらサーバーにメッセージを送信
       websocket.send("0");
     };
 
-    socketRef.current.onmessage = (event) => {
-      // const heart = event.data.json();
-      console.log("HeartRate", event.data);
-      setheartRate(destr(event.data));
-      // ここのログだとundefinedになってしまう
-      console.log("heartRate: ", heartRate?.heartRate1);
-      // `setTest`には配列を渡すため、既存のtestに追加する形で設定
+    websocket.onmessage = (event) => {
+      const data = destr(event.data);
+      setHeartRate(data);
+      console.log("Received HeartRate:", data);
     };
 
     return () => {
@@ -48,70 +49,99 @@ const WebSocket = () => {
 
   useEffect(() => {
     console.log("心拍: ", heartRate.heartRate1);
-    setheartBeeat1((prev) => [...prev, heartRate.heartRate1]);
-    setheartBeeat2((prev) => [...prev, heartRate.heartRate2]);
-    console.log(`配列: ${heartRate.topicId}`);
-    setTopicId(heartRate.topicId);
-  }, [heartRate]);
+    if (isRecording) {
+      setHeartBeeat1((prev) => [...prev, heartRate.heartRate1]);
+      setHeartBeeat2((prev) => [...prev, heartRate.heartRate2]);
+      setDataArray1((prev) => [...prev, heartRate.heartRate1]);
+      setDataArray2((prev) => [...prev, heartRate.heartRate2]);
+
+      console.log("現在のheartBeeat1配列:", heartBeeat1);
+      console.log("現在のheartBeeat2配列:", heartBeeat2);
+    }
+    setTopicId(heartRate.topicId || []);
+  }, [heartRate, isRecording]);
+
+  const handleStart = () => {
+    setIsRecording(true);
+    setDataArray1([]);
+    setDataArray2([]);
+    console.log("記録開始しました");
+  };
+
+  const handleComplete = () => {
+    setIsRecording(false);
+    setHeart1((prev) => [...prev, dataArray1]);
+    setHeart2((prev) => [...prev, dataArray2]);
+    console.log("記録完了。データが以下に保存されました:");
+    console.log("heart1:", heart1);
+    console.log("heart2:", heart2);
+  };
 
   return (
-    <>
-      <h1>Hello WebSocket</h1>
-      <h4>お題1</h4>
-      {topicId && topicId[0] !== undefined ? (
-        <Topics id={topicId[0]} />
-      ) : (
-        <p>トピックがまだ設定されていません。</p>
-      )}
-      <h4>お題2</h4>
-      {topicId && topicId[1] !== undefined ? (
-        <Topics id={topicId[1]} />
-      ) : (
-        <p>トピックがまだ設定されていません。</p>
-      )}
-      <h4>お題3</h4>
-      {topicId && topicId[2] !== undefined ? (
-        <Topics id={topicId[2]} />
-      ) : (
-        <p>トピックがまだ設定されていません。</p>
-      )}
-      <h4>お題4</h4>
-      {topicId && topicId[3] !== undefined ? (
-        <Topics id={topicId[3]} />
-      ) : (
-        <p>トピックがまだ設定されていません。</p>
-      )}
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#f0f0f0", padding: "20px" }}
+    >
+      <Typography variant="h3" gutterBottom color="black">
+        WebSocket 接続
+      </Typography>
 
-      <button
+      {Array.from({ length: 4 }, (_, index) => (
+        <Box key={index} mb={4} textAlign="center">
+          <Typography color="black" variant="h5">
+            お題{index + 1}{" "}
+          </Typography>
+          {topicId[index] !== undefined ? (
+            <Topics id={topicId[index]} />
+          ) : (
+            <Typography variant="body1" color="textSecondary">
+              トピックがまだ設定されていません。
+            </Typography>
+          )}
+          <Stack spacing={2} mt={2} justifyContent="center" alignItems="center">
+            <Button variant="contained" color="primary" onClick={handleStart}>
+              開始
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleComplete}
+            >
+              完了
+            </Button>
+          </Stack>
+        </Box>
+      ))}
+
+      <Button
+        variant="contained"
+        color="primary"
         onClick={() =>
           navigate("/result", {
-            state: { heartRate1: heartBeeat1, heartRate2: heartBeeat2 },
+            state: {
+              heartRate1: heartBeeat1,
+              heartRate2: heartBeeat2,
+              topicHeart1: heart1,
+              topicHeart2: heart2,
+              topicId: topicId,
+            },
           })
         }
+        sx={{ marginTop: "20px" }}
       >
-        next page
-      </button>
-      <p>
-        心拍数: {heartRate.player1}:{heartRate.heartRate1}
-      </p>
-      <p>
-        心拍数: {heartRate.player2}:{heartRate.heartRate2}
-      </p>
-      {/* <h1>player1</h1>
-      <div>
-        {heartBeeat1.map((req, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <p key={index}>{req}</p>
-        ))}
-      </div>
-      <h1>player2</h1>
-      <div>
-        {heartBeeat2.map((req, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <p key={index}>{req}</p>
-        ))}
-      </div> */}
-    </>
+        次のページ
+      </Button>
+
+      <Typography color="black" variant="h6" sx={{ marginTop: "20px" }}>
+        心拍数: {heartRate.player1}: {heartRate.heartRate1}
+      </Typography>
+      <Typography color="black" variant="h6">
+        心拍数: {heartRate.player2}: {heartRate.heartRate2}
+      </Typography>
+    </Box>
   );
 };
 

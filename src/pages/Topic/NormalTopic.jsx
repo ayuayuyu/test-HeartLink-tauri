@@ -1,11 +1,4 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Stack,
-  FormControl,
-  Input,
-} from "@mui/material";
+import { Box, Typography, Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const topicNormal = [
@@ -20,12 +13,13 @@ const topicNormal = [
   { id: 19, topic: "恋愛に関する自分のポリシーを話す" },
   { id: 20, topic: "初対面の異性で最初に気になるポイントを話す" },
 ];
-export default function NormralTopic({ player, count, setCount }) {
+
+export default function NormalTopic({ player, count, setCount }) {
   const navigate = useNavigate();
+
   const sendTopic = (id) => {
     console.log(`Normal_id: ${id}`);
-    const data = { player: player, id: id }; // dataを正しい形式で設定
-
+    const data = { player: player, id: id };
     console.log("ただいま、メールを送信してます", data);
     const url = "https://hartlink-websocket-api.onrender.com/topicId";
 
@@ -44,7 +38,7 @@ export default function NormralTopic({ player, count, setCount }) {
       })
       .then((data) => {
         console.log("Success:", data);
-        if (count == 1) {
+        if (count === 1) {
           navigate(`/room`);
         }
         setCount(1);
@@ -53,26 +47,44 @@ export default function NormralTopic({ player, count, setCount }) {
         console.error("Error:", error);
       });
   };
+
   return (
-    <>
-      <h4>NormralTopic</h4>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#f0f0f0", padding: "20px" }}
+    >
+      <Typography variant="h4" gutterBottom>
+        Normal Topic
+      </Typography>
+
+      <Stack
+        spacing={2}
+        alignItems="center"
+        sx={{ width: "100%", maxWidth: 500 }}
       >
         {topicNormal.map((normal) => (
           <Button
             key={normal.id}
-            style={{ padding: "10px 0" }}
+            variant="contained"
             onClick={() => sendTopic(normal.id)}
+            sx={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              color: "#fff",
+              backgroundColor: "#2196F3",
+              width: "100%",
+              padding: "15px 20px",
+              borderRadius: "10px",
+              ":hover": { backgroundColor: "#1976D2" },
+            }}
           >
             {normal.topic}
           </Button>
         ))}
-      </div>
-    </>
+      </Stack>
+    </Box>
   );
 }

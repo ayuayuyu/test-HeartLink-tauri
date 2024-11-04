@@ -21,7 +21,7 @@ const Home = () => {
   }, []);
 
   const req = () => {
-    const data = { player: player, name: name }; // dataを正しい形式で設定
+    const data = { player: player, name: name };
 
     console.log(`送信: ${JSON.stringify(data)}`);
     const url = "https://hartlink-websocket-api.onrender.com/name";
@@ -48,7 +48,6 @@ const Home = () => {
   };
 
   const handleNameChange = (e) => {
-    console.log(name);
     setName(e.target.value);
   };
 
@@ -58,81 +57,78 @@ const Home = () => {
       navigate(`/select`, { state: { player: player } });
     } else {
       alert("名前の入力とPlayerを選択してください");
-      console.log("名前の入力");
     }
   };
 
   const setPlayers = (player) => {
-    console.log(`player: ${player}`);
     setPlayer(player);
   };
 
   return (
-    <>
-      <Box>
-        <Box>
-          <Stack
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-            spacing={3}
-            sx={{ mt: "20%" }}
-          >
-            {/* 名前入力 */}
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: "8vw",
-              }}
-            >
-              名前
-            </Typography>
-            <FormControl required color="primary" sx={{ width: "60%" }}>
-              <Input
-                placeholder="名前を入力"
-                name="Name"
-                autoComplete="off"
-                fullWidth
-                disableUnderline
-                onChange={handleNameChange}
-                sx={{
-                  padding: "10px",
-                  borderRadius: "15px",
-                  border: "3px solid white",
-                  backgroundColor: "white",
-                }}
-              />
-            </FormControl>
-          </Stack>
-          <Box>
-            <Box
-              sx={{
-                mt: 5,
-                position: "relative",
-              }}
-            ></Box>
-          </Box>
-          <Button onClick={() => setPlayers("1")}>Player1</Button>
-          <Button onClick={() => setPlayers("2")}>Player2</Button>
-
-          <Button
-            onClick={() => handleSubmit()}
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#f0f0f0" }}
+    >
+      <Stack
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        spacing={3}
+        sx={{ width: "80%", maxWidth: "400px" }}
+      >
+        <Typography variant="h4" gutterBottom color="blue">
+          名前
+        </Typography>
+        <FormControl required fullWidth>
+          <Input
+            placeholder="名前を入力"
+            value={name}
+            onChange={handleNameChange}
+            disableUnderline
             sx={{
-              fontSize: "8vw",
-              fontWeight: "bold",
-              color: "white",
-              backgroundColor: "#ffdbdb",
-              marginTop: "10%",
-              border: "10px solid white",
+              padding: "10px",
               borderRadius: "15px",
-              padding: "2px 30px 2px 30px",
+              border: "2px solid #ddd",
+              backgroundColor: "#fff",
             }}
+          />
+        </FormControl>
+        <Box display="flex" justifyContent="space-around" width="100%">
+          <Button
+            variant={player === "1" ? "contained" : "outlined"}
+            onClick={() => setPlayers("1")}
+            sx={{ width: "45%" }}
           >
-            タップ
+            Player1
+          </Button>
+          <Button
+            variant={player === "2" ? "contained" : "outlined"}
+            onClick={() => setPlayers("2")}
+            sx={{ width: "45%" }}
+          >
+            Player2
           </Button>
         </Box>
-      </Box>
-    </>
+        <Button
+          onClick={handleSubmit}
+          fullWidth
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            color: "#fff",
+            backgroundColor: "#ff4d4d",
+            padding: "10px",
+            borderRadius: "10px",
+            ":hover": { backgroundColor: "#ff3333" },
+          }}
+        >
+          タップ
+        </Button>
+      </Stack>
+    </Box>
   );
 };
 

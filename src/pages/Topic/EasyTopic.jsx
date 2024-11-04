@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Typography, Box, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const topicEasy = [
@@ -13,12 +13,13 @@ const topicEasy = [
   { id: 9, topic: "スポーツの経験や好きなスポーツを話す" },
   { id: 10, topic: "ペットがいるなら、ペットについて話す" },
 ];
+
 export default function EasyTopic({ player, count, setCount }) {
   const navigate = useNavigate();
+
   const sendTopic = (id) => {
     console.log(`Easy_id: ${id}`);
-    const data = { player: player, id: id }; // dataを正しい形式で設定
-
+    const data = { player: player, id: id };
     console.log("ただいま、メールを送信してます", data);
     const url = "https://hartlink-websocket-api.onrender.com/topicId";
 
@@ -37,7 +38,7 @@ export default function EasyTopic({ player, count, setCount }) {
       })
       .then((data) => {
         console.log("Success:", data);
-        if (count == 1) {
+        if (count === 1) {
           navigate(`/room`);
         }
         setCount(1);
@@ -46,26 +47,44 @@ export default function EasyTopic({ player, count, setCount }) {
         console.error("Error:", error);
       });
   };
+
   return (
-    <>
-      <h4>EasyTopic</h4>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#f0f0f0", padding: "20px" }}
+    >
+      <Typography variant="h4" gutterBottom>
+        Easy Topic
+      </Typography>
+
+      <Stack
+        spacing={2}
+        alignItems="center"
+        sx={{ width: "100%", maxWidth: 500 }}
       >
         {topicEasy.map((easy) => (
           <Button
             key={easy.id}
-            style={{ padding: "10px 0" }}
+            variant="contained"
             onClick={() => sendTopic(easy.id)}
+            sx={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              color: "#fff",
+              backgroundColor: "#4CAF50",
+              width: "100%",
+              padding: "15px 20px",
+              borderRadius: "10px",
+              ":hover": { backgroundColor: "#388E3C" },
+            }}
           >
             {easy.topic}
           </Button>
         ))}
-      </div>
-    </>
+      </Stack>
+    </Box>
   );
 }
