@@ -1,8 +1,5 @@
-import React, { useState } from "react";
 import { Button } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
-
-const randomTopics = [
+const topics = [
   { id: 1, topic: "好きな食べ物について話す" },
   { id: 2, topic: "行ってみたい旅行先を話す" },
   { id: 3, topic: "趣味や特技について話す" },
@@ -35,66 +32,12 @@ const randomTopics = [
   { id: 30, topic: "相手に対して今感じていることを素直に話す" },
 ];
 
-export default function RandomTopic() {
-  const [currentTopic, setCurrentTopic] = useState(null);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const player = location.state.player;
-  const [count, setCount] = useState(0);
-
-  function getRandomTopic() {
-    const index = Math.floor(Math.random() * randomTopics.length);
-    sendTopic(index);
-    setCurrentTopic(randomTopics[index]);
-  }
-  const sendTopic = (id) => {
-    console.log(`random_id: ${id},count: ${count}`);
-    const data = { player: player, id: id }; // dataを正しい形式で設定
-
-    console.log("ただいま、メールを送信してます", data);
-    const url = "https://hartlink-websocket-api.onrender.com/topicId";
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("ネットワーク応答が正常ではありません");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Success:", data);
-        if (count == 1) {
-          navigate(`/room`);
-        }
-        setCount(1);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+export default function Topics({ id }) {
+  const topic = topics[id - 1]?.topic || "お題が存在しません";
 
   return (
     <>
-      <h1>2回ランダムボタンを押してね!</h1>
-      <h4>Random Topic</h4>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Button onClick={() => getRandomTopic()} variant="contained">
-          ランダムなお題
-        </Button>
-        {currentTopic && <Button>{currentTopic.topic}</Button>}
-      </div>
+      <Button>{topic}</Button>
     </>
   );
 }

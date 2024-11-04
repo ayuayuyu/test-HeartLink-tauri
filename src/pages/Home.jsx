@@ -13,29 +13,58 @@ const Home = () => {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const [player, setPlayer] = useState("");
 
   useEffect(() => {
     setName("");
-    setPassword("");
+    setPlayer("");
   }, []);
+
+  const req = () => {
+    const data = { player: player, name: name }; // dataを正しい形式で設定
+
+    console.log(`送信: ${JSON.stringify(data)}`);
+    const url = "https://hartlink-websocket-api.onrender.com/name";
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("ネットワーク応答が正常ではありません");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   const handleNameChange = (e) => {
     console.log(name);
     setName(e.target.value);
   };
 
-  const handlePassChange = (e) => {
-    console.log(password);
-    setPassword(e.target.value);
+  const handleSubmit = () => {
+    if (name && player) {
+      req();
+      navigate(`/select`, { state: { player: player } });
+    } else {
+      alert("名前の入力とPlayerを選択してください");
+      console.log("名前の入力");
+    }
   };
 
-  const handleSubmit = () => {
-    if (name && password) {
-      navigate(`/room?roomId=${password}`);
-    } else {
-      console.log("名前とパスの入力");
-    }
+  const setPlayers = (player) => {
+    console.log(`player: ${player}`);
+    setPlayer(player);
   };
 
   return (
@@ -74,32 +103,6 @@ const Home = () => {
                 }}
               />
             </FormControl>
-
-            {/* 合言葉入力 */}
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: "8vw",
-              }}
-            >
-              合言葉
-            </Typography>
-            <FormControl required color="primary" sx={{ width: "60%" }}>
-              <Input
-                placeholder="合言葉を入力"
-                name="Password"
-                autoComplete="off"
-                fullWidth
-                disableUnderline
-                onChange={handlePassChange}
-                sx={{
-                  padding: "10px",
-                  borderRadius: "15px",
-                  border: "3px solid white",
-                  backgroundColor: "white",
-                }}
-              />
-            </FormControl>
           </Stack>
           <Box>
             <Box
@@ -109,9 +112,11 @@ const Home = () => {
               }}
             ></Box>
           </Box>
+          <Button onClick={() => setPlayers("1")}>Player1</Button>
+          <Button onClick={() => setPlayers("2")}>Player2</Button>
 
           <Button
-            onClick={handleSubmit}
+            onClick={() => handleSubmit()}
             sx={{
               fontSize: "8vw",
               fontWeight: "bold",

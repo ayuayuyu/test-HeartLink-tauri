@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 // import { ChakraProvider } from "@mui/material";
 
 import "./App.css";
+import Select from "./pages/Select";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path={`/`} element={<Home />} />
+          <Route path={`/select`} element={<Select />} />
           <Route path={`/topic`} element={<Topic />} />
           <Route path={`/randomtopic`} element={<RandomTopic />} />
           <Route path={`/room`} element={<Room />} />

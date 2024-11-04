@@ -6,8 +6,8 @@ import RandomTopic from "./Topic/RandomTopic";
 function Room() {
   return (
     <Container>
-      <Topic />
-      <RandomTopic />
+      {/* <Topic /> */}
+      {/* <RandomTopic /> */}
       <WebSocket />
     </Container>
   );
