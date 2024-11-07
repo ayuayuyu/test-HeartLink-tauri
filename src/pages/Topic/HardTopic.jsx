@@ -2,16 +2,16 @@ import { Button, Typography, Box, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const topicHard = [
-  { id: 21, topic: "相手の外見や性格で素敵だと思う部分を話す" },
-  { id: 22, topic: "相手を恋人と考えてしてほしいことや願望を話す" },
-  { id: 23, topic: "相手と付き合うことを想像したらどう思うか話す" },
-  { id: 24, topic: "相手に一番ときめいた瞬間を話す" },
-  { id: 25, topic: "相手を抱きしめたいと思う瞬間を話す" },
-  { id: 26, topic: "相手に一番、求めるもているもの" },
-  { id: 27, topic: "一番寂しかった恋愛経験を話す" },
-  { id: 28, topic: "相手を好きな人としてどんな風に告白したいか話す" },
-  { id: 29, topic: "相手にどのようにプロポーズをするか" },
-  { id: 30, topic: "相手に対して今感じていることを素直に話す" },
+  { id: 1, topic: "相手の外見や性格で素敵だと思う部分を話す" },
+  { id: 2, topic: "相手を恋人と考えてしてほしいことや願望を話す" },
+  { id: 3, topic: "相手と付き合うことを想像したらどう思うか話す" },
+  { id: 4, topic: "相手に一番ときめいた瞬間を話す" },
+  { id: 5, topic: "相手を抱きしめたいと思う瞬間を話す" },
+  { id: 6, topic: "相手に一番、求めるもているもの" },
+  { id: 7, topic: "一番寂しかった恋愛経験を話す" },
+  { id: 8, topic: "相手を好きな人としてどんな風に告白したいか話す" },
+  { id: 9, topic: "相手にどのようにプロポーズをするか" },
+  { id: 10, topic: "相手に対して今感じていることを素直に話す" },
 ];
 
 export default function HardTopic({ player, count, setCount }) {

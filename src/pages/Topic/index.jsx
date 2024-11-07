@@ -36,9 +36,9 @@ export default function Topic() {
         <SwiperSlide style={{ padding: "10px 10px" }}>
           <NormralTopic player={player} count={count} setCount={setCount} />
         </SwiperSlide>
-        <SwiperSlide style={{ padding: "10px 10px" }}>
+        {/* <SwiperSlide style={{ padding: "10px 10px" }}>
           <EasyTopic player={player} count={count} setCount={setCount} />
-        </SwiperSlide>
+        </SwiperSlide> */}
       </Swiper>
     </>
   );
