@@ -21,6 +21,10 @@ const WebSocket = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [dataArray1, setDataArray1] = useState([]);
   const [dataArray2, setDataArray2] = useState([]);
+  const [dataArray, setDataArray] = useState({
+    array1: {},
+    array2: {},
+  });
   const socketRef = useRef();
 
   useEffect(() => {
@@ -102,6 +106,36 @@ const WebSocket = () => {
         console.error("Error:", error);
       });
   };
+  const topicArray = () => {
+    console.log("topicArray動いたよ");
+    const url = "https://hartlink-websocket-api.onrender.com/getTopicArray";
+
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("ネットワーク応答が正常ではありません");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Success:", data);
+        console.log("array1:", data.array1);
+        console.log("array2:", data.array2);
+        console.log("th10:", data.array1["0"]);
+        setDataArray(data);
+
+        console.log(`array1: ${data.array1}  array2: ${data.array2}`);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  console.log(`dataArray: ${dataArray}`);
 
   return (
     <Box
@@ -145,6 +179,7 @@ const WebSocket = () => {
           </Stack>
         </Box>
       ))}
+      <Button onClick={() => topicArray()}>getTopicArray</Button>
 
       <Button
         variant="contained"
@@ -157,6 +192,7 @@ const WebSocket = () => {
               heartRate1: heartBeeat1,
               heartRate2: heartBeeat2,
               topicId: topicId,
+              dataArray: dataArray,
             },
           })
         }

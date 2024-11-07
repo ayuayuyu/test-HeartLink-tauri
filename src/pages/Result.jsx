@@ -49,18 +49,6 @@ function Result() {
   const [player, setPlayer] = useState("");
   const [playerName1, setPlayerName1] = useState("player1");
   const [playerName2, setPlayerName2] = useState("player2");
-  const [th10, setTh10] = useState([]);
-  const [th20, setTh20] = useState([]);
-  const [th11, setTh11] = useState([]);
-  const [th21, setTh21] = useState([]);
-  const [th12, setTh12] = useState([]);
-  const [th22, setTh22] = useState([]);
-  const [th13, setTh13] = useState([]);
-  const [th23, setTh23] = useState([]);
-  const [dataArray, setDataArray] = useState({
-    array1: {},
-    array2: {},
-  });
 
   const getName = () => {
     const url = "https://hartlink-websocket-api.onrender.com/getName";
@@ -88,45 +76,6 @@ function Result() {
         console.log(
           `player1: ${data.player1}  player2: ${destr(data).player2}`
         );
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  const topicArray = () => {
-    console.log("topicArray動いたよ");
-    const url = "https://hartlink-websocket-api.onrender.com/getTopicArray";
-
-    fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("ネットワーク応答が正常ではありません");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Success:", data);
-        console.log("array1:", data.array1);
-        console.log("array2:", data.array2);
-        console.log("th10:", data.array1["0"]);
-
-        setTh10(destr(data.array1["0"])); // array1 のデータをセット
-        setTh11(destr(data.array1["1"])); // array1 のデータをセット
-        setTh12(destr(data.array1["2"])); // array1 のデータをセット
-        setTh13(destr(data.array1["3"])); // array1 のデータをセット
-
-        setTh20(destr(data.array2["0"])); // array2 のデータをセット
-        setTh21(destr(data.array2["1"])); // array2 のデータをセット
-        setTh22(destr(data.array2["2"])); // array2 のデータをセット
-        setTh23(destr(data.array2["3"])); // array2 のデータをセット
-        setDataArray(data);
-
-        console.log(`array1: ${data.array1}  array2: ${data.array2}`);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -163,25 +112,38 @@ function Result() {
     console.log(`player1だよ:${player.player1}  player2だよ:${player.player2}`);
   }, [player]);
 
-  //   useEffect(() => {
-  //     setTh10(destr(dataArray.array1["0"])); // array1 のデータをセット
-  //     setTh11(destr(dataArray.array1["1"])); // array1 のデータをセット
-  //     setTh12(destr(dataArray.array1["2"])); // array1 のデータをセット
-  //     setTh13(destr(dataArray.array1["3"])); // array1 のデータをセット
+  // location.stateがundefinedの場合、空のオブジェクトをデフォルトにする
+  const {
+    heartRate1 = [],
+    heartRate2 = [],
+    topicId = "",
+    dataArray = { array1: [], array2: [] },
+  } = location.state || {};
 
-  //     setTh20(destr(dataArray.array2["0"])); // array2 のデータをセット
-  //     setTh21(destr(dataArray.array2["1"])); // array2 のデータをセット
-  //     setTh22(destr(dataArray.array2["2"])); // array2 のデータをセット
-  //     setTh23(destr(dataArray.array2["3"])); // array2 のデータをセット
-  //   }, [dataArray]);
-
-  console.log(`dataArray.array1["0"]:${dataArray.array1["0"]}`);
-  const { heartRate1, heartRate2, topicId } = location.state || {};
-  const datasets = location.state;
+  // 必要な配列データがあれば取得、なければ空配列にして初期化
   const h1 = heartRate1;
   const h2 = heartRate2;
+  const th10 = dataArray.array1[0];
+  const th11 = dataArray.array1[1];
+  const th12 = dataArray.array1[2];
+  const th13 = dataArray.array1[3];
+
+  const th20 = dataArray.array2[0];
+  const th21 = dataArray.array2[1];
+  const th22 = dataArray.array2[2];
+  const th23 = dataArray.array2[3];
+
+  // データ確認のためのコンソール出力
+  console.log(`dataArray:`, dataArray);
+  console.log(`array1[0]:`, dataArray.array1?.[0]);
+  console.log(`array2[2]:`, dataArray.array2?.[0]);
+  console.log(`th10 ${th10}`);
+  console.log(`th20 ${th20}`);
+
+  // 配列のデータが存在するかを確認した上でfilterを適用
   const hr11 = h1.filter((value) => value != 0);
   const hr21 = h2.filter((value) => value != 0);
+
   const thrr10 = th10.filter((value) => value != 0);
   const thrr20 = th20.filter((value) => value != 0);
   const thrr11 = th11.filter((value) => value != 0);
@@ -190,17 +152,31 @@ function Result() {
   const thrr22 = th22.filter((value) => value != 0);
   const thrr13 = th13.filter((value) => value != 0);
   const thrr23 = th23.filter((value) => value != 0);
+  const filter1 = (heart) => {
+    const validHeartRates = heart
+      .map((value) => parseFloat(value)) // 文字列を数値に変換
+      .filter((value) => !isNaN(value) && value !== 0); // NaN や 0 を除外
+    return validHeartRates;
+  };
 
-  const filter = (heart) => {
-    const validHeartRates = heart.filter(
-      (value) => value !== "" && !isNaN(value)
+  const hr1 = filter1(hr11);
+  const hr2 = filter1(hr21);
+  const labels1 = Array.from({ length: hr1.length }, (_, i) => i + 1);
+  const labels2 = Array.from({ length: hr2.length }, (_, i) => i + 1);
+  // カンマで分割して、parseFloatを使って数値に変換
+  const filter = (array) => {
+    const parsedHeartRates = String(array[0])
+      .split(",")
+      .map((value) => {
+        const parsedValue = parseFloat(value);
+        return parsedValue;
+      });
+    // NaN や 0 を除外
+    const validHeartRates = parsedHeartRates.filter(
+      (value) => !isNaN(value) && value !== 0
     );
     return validHeartRates;
   };
-  const hr1 = filter(hr11);
-  const hr2 = filter(hr21);
-  const labels1 = Array.from({ length: hr1.length }, (_, i) => i + 1);
-  const labels2 = Array.from({ length: hr2.length }, (_, i) => i + 1);
   const thr10 = filter(thrr10);
   const thr20 = filter(thrr20);
   const thr11 = filter(thrr11);
@@ -209,39 +185,41 @@ function Result() {
   const thr22 = filter(thrr22);
   const thr13 = filter(thrr13);
   const thr23 = filter(thrr23);
-  //   const labels3 = Array.from({ length: thr1[0].length }, (_, i) => i + 1);
-  //   const labels4 = Array.from({ length: thr11.length }, (_, i) => i + 1);
-  //   const labels5 = Array.from({ length: thr1[2].length }, (_, i) => i + 1);
-  //   const labels6 = Array.from({ length: thr1[3].length }, (_, i) => i + 1);
-  //   const labels7 = Array.from({ length: thr2[0].length }, (_, i) => i + 1);
-  //   const labels8 = Array.from({ length: thr2[1].length }, (_, i) => i + 1);
-  //   const labels9 = Array.from({ length: thr2[2].length }, (_, i) => i + 1);
-  //   const labels10 = Array.from({ length: thr2[3].length }, (_, i) => i + 1);
-  const labels3 = thr10
-    ? Array.from({ length: thr10.length }, (_, i) => i + 1)
-    : [];
-  const labels4 = thr11
-    ? Array.from({ length: thr11.length }, (_, i) => i + 1)
-    : [];
-  const labels5 = thr12
-    ? Array.from({ length: thr12.length }, (_, i) => i + 1)
-    : [];
-  const labels6 = thr13
-    ? Array.from({ length: thr13.length }, (_, i) => i + 1)
-    : [];
+  console.log(`thr10:${thr10}`);
+  console.log(`thr20:${thr20}`);
+  const labels3 = Array.from({ length: thr10.length }, (_, i) => i + 1);
+  const labels4 = Array.from({ length: thr11.length }, (_, i) => i + 1);
+  const labels5 = Array.from({ length: thr12.length }, (_, i) => i + 1);
+  const labels6 = Array.from({ length: thr13.length }, (_, i) => i + 1);
+  const labels7 = Array.from({ length: thr20.length }, (_, i) => i + 1);
+  const labels8 = Array.from({ length: thr21.length }, (_, i) => i + 1);
+  const labels9 = Array.from({ length: thr22.length }, (_, i) => i + 1);
+  const labels10 = Array.from({ length: thr23.length }, (_, i) => i + 1);
+  // const labels3 = thr10
+  //     ? Array.from({ length: thr10.length }, (_, i) => i + 1)
+  //     : [];
+  //   const labels4 = thr11
+  //     ? Array.from({ length: thr11.length }, (_, i) => i + 1)
+  //     : [];
+  //   const labels5 = thr12
+  //     ? Array.from({ length: thr12.length }, (_, i) => i + 1)
+  //     : [];
+  //   const labels6 = thr13
+  //     ? Array.from({ length: thr13.length }, (_, i) => i + 1)
+  //     : [];
 
-  const labels7 = thr20
-    ? Array.from({ length: thr20.length }, (_, i) => i + 1)
-    : [];
-  const labels8 = thr21
-    ? Array.from({ length: thr21.length }, (_, i) => i + 1)
-    : [];
-  const labels9 = thr22
-    ? Array.from({ length: thr22.length }, (_, i) => i + 1)
-    : [];
-  const labels10 = thr23
-    ? Array.from({ length: thr23.length }, (_, i) => i + 1)
-    : [];
+  //   const labels7 = thr20
+  //     ? Array.from({ length: thr20.length }, (_, i) => i + 1)
+  //     : [];
+  //   const labels8 = thr21
+  //     ? Array.from({ length: thr21.length }, (_, i) => i + 1)
+  //     : [];
+  //   const labels9 = thr22
+  //     ? Array.from({ length: thr22.length }, (_, i) => i + 1)
+  //     : [];
+  //   const labels10 = thr23
+  //     ? Array.from({ length: thr23.length }, (_, i) => i + 1)
+  //     : [];
 
   //   console.log(labels1 + " " + labels2);
   //   console.log(`hr1: ${hr1}`);
@@ -303,7 +281,7 @@ function Result() {
 
   const avg = (heart) => {
     if (!heart || heart.length === 0) return 0; // 配列が定義されていない場合または空の場合は 0 を返す
-    const sum = heart.reduce((acc, cur) => acc + cur, 0);
+    const sum = heart.reduce((acc, cur) => parseInt(acc) + parseInt(cur), 0);
     return Math.round(sum / heart.length);
   };
 
@@ -334,7 +312,6 @@ function Result() {
         modules={[Navigation, Pagination]}
       >
         <Button onClick={() => getName()}>getName</Button>
-        <Button onClick={() => topicArray()}>topicArray</Button>
         <button onClick={() => reset()}>button</button>
         <SwiperSlide style={{ padding: "10px 10px" }}>
           <p style={{ paddingTop: "1vh" }}>{playerName1}</p>
